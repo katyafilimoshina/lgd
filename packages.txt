@@ -1,7 +1,6 @@
 streamlit
 clifford
 sympy
-math
 galgebra
 PIL
 plotly
