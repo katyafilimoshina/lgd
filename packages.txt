@@ -1,5 +1,0 @@
-streamlit
-clifford
-sympy
-galgebra
-plotly
