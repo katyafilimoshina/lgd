@@ -4,8 +4,8 @@ import sympy
 from math import sqrt
 from galgebra.ga import Ga
 from galgebra.printer import latex
-from IPython.display import Math
-from PIL import Image
+# from IPython.display import Math
+# from PIL import Image
 import plotly.graph_objects as go
 
 
@@ -441,8 +441,6 @@ def figure_rotation(element, start):
         title="Поворот"))
   
   return fig
-
-
 
 
 
