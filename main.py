@@ -35,7 +35,7 @@ st.markdown("""
 
 
 st.title(":violet[Разложение элементов группы Липшица в произведение векторов в алгебрах Клиффорда]")
-st.subheader("Привет! Это веб-приложение для работы с группой Липшица в алгебрах Клиффорда.")
+st.subheader("Это веб-приложение для работы с группой Липшица в алгебрах Клиффорда.")
 st.markdown("Вот что можно делать с помощью этого веб-приложения:")
 st.markdown("- Проверить принадлежность элемента группе Липшица,")
 st.markdown("- Разложить элемент группы Липшица в произведение векторов,")
@@ -63,7 +63,7 @@ st.sidebar.write("")
 
 ## Блок определения алгебры Клиффорда (включая левую панель)
 n = 3
-st.sidebar.write('Задай сигнатуру алгебры Клиффорда:')
+st.sidebar.write('Задайте сигнатуру алгебры Клиффорда:')
 p = st.sidebar.number_input('Количество генераторов, дающих в квадрате +e :violet[(p)]', 0, n, value=n)
 q = st.sidebar.number_input('Количество генераторов, дающих в квадрате -e :violet[(q)]', 0, n-p, value=0)
 
@@ -510,7 +510,7 @@ if p + q == 3:
 if p + q != 0:
     st.caption(f"Подсказка: можно попробовать ввести элемент {hint}")
     user_input = st.text_input("Элемент алгебры Клиффорда", default_user_input, key='input_arb_el')
-    st.write(f"Ты ввёл элемент {user_input}.")
+    st.write(f"Вы ввели элемент {user_input}.")
     try:
         input_element = eval(user_input)
 
@@ -552,7 +552,7 @@ if p + q == 3:
 if p + q != 0:
     st.caption(f"Подсказка: можно попробовать ввести элемент {hint_fact}")
     input_lg = st.text_input("Элемент алгебры Клиффорда", default_input_lg, key='input_lg')
-    st.write(f"Ты ввёл элемент {input_lg}.")
+    st.write(f"Вы ввели элемент {input_lg}.")
     try: 
         input_element_lg = eval(input_lg)
         factorization_result = factorization(input_element_lg)
