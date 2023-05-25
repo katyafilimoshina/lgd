@@ -62,10 +62,28 @@ st.sidebar.write("")
 
 
 ## Блок определения алгебры Клиффорда (включая левую панель)
-n = 3
+# n = 3
+# st.sidebar.write('Задайте сигнатуру алгебры Клиффорда:')
+# p = st.sidebar.number_input('Количество генераторов, дающих в квадрате +e :violet[(p)]', 0, n, value=n)
+# q = st.sidebar.number_input('Количество генераторов, дающих в квадрате -e :violet[(q)]', 0, n-p, value=0)
+n = 4
 st.sidebar.write('Задайте сигнатуру алгебры Клиффорда:')
-p = st.sidebar.number_input('Количество генераторов, дающих в квадрате +e :violet[(p)]', 0, n, value=n)
-q = st.sidebar.number_input('Количество генераторов, дающих в квадрате -e :violet[(q)]', 0, n-p, value=0)
+p = st.sidebar.number_input('Количество генераторов, дающих в квадрате +e :violet[(p)]', 0, n, value=n-1)
+if p == 4:
+  k = 0
+  q = 0
+# if p == 3:
+#   k = 0
+# if p == 2:
+#   k = 1
+# if p == 1:
+#   k = 2
+elif p == 0:
+  k = 4
+  q = 4
+else:
+  k = n - p - 1
+  q = st.sidebar.number_input('Количество генераторов, дающих в квадрате -e :violet[(q)]', 0, k, value=0)
 
 layout, blades = cf.Cl(p,q) # задаем алгебру Клиффорда Cl(p,q)
 locals().update(blades)
@@ -87,6 +105,7 @@ blades_dict = dict((i, list(blades.keys())[i]) for i in range(len(blades)))
 xyz_1 = (x) = sympy.symbols('1 ', real=True)
 xyz_2 = (x, y) = sympy.symbols('1 2', real=True)
 xyz_3 = (x, y, z) = sympy.symbols('1 2 3', real=True)
+xyz_4 = (x, y, z, d) = sympy.symbols('1 2 3 4', real=True)
 eta_ii = [1 for i in range(p)] + [-1 for i in range(q)]
 
 xyz = (x, y, z) = sympy.symbols('1 2 3', real=True)
@@ -107,6 +126,11 @@ if p + q == 3:
     o3d = Ga('e_1 e_2 e_3', g=eta_ii, coords=xyz_3)
     e_1, e_2, e_3 = o3d.mv()
     latex_generators = e_1, e_2, e_3
+
+if p + q == 4:
+    o3d = Ga('e_1 e_2 e_3 e_4', g=eta_ii, coords=xyz_4)
+    e_1, e_2, e_3, e_4 = o3d.mv()
+    latex_generators = e_1, e_2, e_3, e_4
 
 
 st.header(":violet[Рассматриваемая алгебра Клиффорда]", anchor='section-algebra')
@@ -318,6 +342,83 @@ def factorization_n3(element):
     return factors
 
 
+def factorization_n4_th1(element):
+  '''
+  Находит множители по Теореме 1
+
+  :element: элемент группы Липшица
+  :return: обратимые векторы в разложении
+  '''
+  u_dict = dict((i, element.value[i]) for i in range(len(element.value)))
+  element_dict = {v: u_dict[k] for k, v in blades_dict.items()}
+
+  factors = []
+  if (element_dict['e1']) ** 2 + (element_dict['e2']) ** 2 + (element_dict['e3']) ** 2 + (element_dict['e4']) ** 2 != 0:
+    factors.append((element_dict['e1'] * e1 + element_dict['e2'] * e2 + element_dict['e3'] * e3 + element_dict['e4'] * e4).inv())
+  elif (element_dict['e134']) ** 2 + (element_dict['e234']) ** 2 != 0:
+    factors.append(((element_dict['e134']) * e1 + (element_dict['e234']) * e2).inv())
+  else:
+    factors.append(((element_dict['e123']) * e3 + (element_dict['e124']) * e4).inv())
+  return factors
+
+
+def factorization_n4_th2(element):
+  '''
+  Находит множители по Теореме 2
+
+  :element: элемент группы Липшица
+  :return: обратимые векторы в разложении
+  '''
+  u_dict = dict((i, element.value[i]) for i in range(len(element.value)))
+  element_dict = {v: u_dict[k] for k, v in blades_dict.items()}
+
+  factors = []
+  if element == element(0):
+      factors.append(element(0) * e1.inv())
+      factors.append(e1)
+  else:
+    if (element_dict['e14']) ** 2 + (element_dict['e24']) ** 2 + (element_dict['e34']) ** 2 != 0:
+      factors.append((element_dict['e14'] * e1 + element_dict['e24'] * e2 + element_dict['e34'] * e3).inv())
+      factors.append((element_dict['e14'] * e1 + element_dict['e24'] * e2 + element_dict['e34'] * e3) * element)
+    elif (element_dict['e13']) ** 2 + (element_dict['e23']) ** 2 + (element_dict['e34']) ** 2 != 0:
+      factors.append((element_dict['e13'] * e1 + element_dict['e23'] * e2 - element_dict['e34'] * e4).inv())
+      factors.append((element_dict['e13'] * e1 + element_dict['e23'] * e2 - element_dict['e34'] * e4) * element)
+    elif (element_dict['e12']) ** 2 + (element_dict['e23']) ** 2 + (element_dict['e24']) ** 2 != 0:
+      factors.append((element_dict['e12'] * e1 - element_dict['e23'] * e3 - element_dict['e24'] * e4).inv())
+      factors.append((element_dict['e12'] * e1 - element_dict['e23'] * e3 - element_dict['e24'] * e4) * element)
+    else:
+      factors.append((element_dict['e12'] * e2 + element_dict['e13'] * e3 - element_dict['e14'] * e4).inv())
+      factors.append((element_dict['e12'] * e1 - element_dict['e23'] * e3 - element_dict['e24'] * e4) * element)
+  return factors
+
+
+def factorization_n4(element):
+  '''
+  Раскладывает элемент группы Липшица в произведение векторов в случае (p,q)=(4,0) или (0,4)
+
+  :element: элемент группы Липшица
+  :return: list() с множителями в разложении
+  '''
+  factors = []
+  element = element + e1 - e1
+
+  if (element(1) - element) == 0: # если подан вектор
+    factors.append(element)
+     
+  elif element(4) != 0: # Замечание 3
+    factors.append(e1)
+    factors.extend(factorization_n4(e1.inv() * element))
+  
+  elif (if_even(element) == True) & (element(4) == 0): # Теорема 2
+    factors.extend(factorization_n4_th2(element))
+  
+  else: # Теорема 1
+    factors.extend(factorization_n4_th1(element))
+    factors.extend(factorization_n4(factors[-1].inv() * element))
+  
+  return factors
+  
+
 def factorization(element):
   '''
   Главная функция разложения элементов группы Липшица в произведение векторов
@@ -335,6 +436,8 @@ def factorization(element):
       return factorization_n2(element)
     if p + q == 3:
       return factorization_n3(element)
+    if p + q == 4:
+      return factorization_n4(element)
   
   else:
     return in_LG
@@ -507,6 +610,10 @@ if p + q == 3:
     hint = "e1 + e2 + e3 + e123" + " или " + "e1 + e2 + e3 + 2\*e123" + " или " + "1 + e123"
     default_user_input = "e1 + e2 + e3 + 2*e123"
 
+if p + q == 4:
+    hint = "e1 + e2 + e134 + e234" + " или " + "1 + e12 + e13 + e14 + e23 + e24 + e34 + e1234" + " или " + "1 + e1234" + " или " + "1 + e12 + e34"
+    default_user_input = "e1 + e2 + e134 + e234"
+
 if p + q != 0:
     st.caption(f"Подсказка: можно попробовать ввести элемент {hint}")
     user_input = st.text_input("Элемент алгебры Клиффорда", default_user_input, key='input_arb_el')
@@ -548,6 +655,10 @@ if p + q == 2:
 if p + q == 3:
     hint_fact =   "e1 + e2 + e3 + 2\*e123" + " или " + "e1 + (1/2)*e2 + sqrt(3)*e3 + e123" + " или " + "1 + e123"
     default_input_lg = "e1 + e2 + e3 + 2*e123"
+
+if p + q == 4:
+    hint_fact = "e1 + e2 + e134 + e234" + " или " + "1 + e12 + e13 + e14 + e23 + e24 + e34 + e1234" + " или " + "1 + e1234" + " или " + "(1/2)*e1 + e2 + e3 + e4 + e123 + (1/2)*e134 + e124 + e234"
+    default_input_lg = "1 + e12 + e13 + e14 + e23 + e24 + e34 + e1234"
 
 if p + q != 0:
     st.caption(f"Подсказка: можно попробовать ввести элемент {hint_fact}")
